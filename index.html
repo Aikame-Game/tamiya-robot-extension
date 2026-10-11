@@ -112,7 +112,7 @@
             transform: scale(0.98);
         }
 
-        /* D-PAD (5x5 GRID for 2-step arrows) */
+        /* D-PAD (5x5 GRID) */
         .controller-panel {
             background: #2a2a38;
             padding: 20px;
@@ -152,23 +152,19 @@
             touch-action: manipulation;
         }
 
-        .btn-cmd:active, .btn-cmd.active {
-            background: #4c97ff;
-            border-color: #79b1ff;
-            transform: scale(0.95);
+        /* 選択中（動作中）のボタンハイライト */
+        .btn-cmd.active {
+            background: #4c97ff !important;
+            border-color: #79b1ff !important;
+            color: #ffffff !important;
+            box-shadow: 0 0 12px rgba(76, 151, 255, 0.6);
         }
 
-        /* 2段階（Fast）ボタンの強調表示 */
+        /* 2段階（Fast）ボタンの表示 */
         .btn-cmd.fast {
             background: #2b4263;
             border-color: #3b629b;
             color: #ffca28;
-        }
-
-        .btn-cmd.fast:active, .btn-cmd.fast.active {
-            background: #ffab19;
-            border-color: #ffd54f;
-            color: #fff;
         }
 
         .btn-stop {
@@ -180,7 +176,7 @@
             grid-row: 3;
         }
 
-        .btn-stop:active {
+        .btn-stop:active, .btn-stop.active {
             background: #b71c1c;
         }
 
@@ -258,7 +254,7 @@
 
     <!-- コントローラーパネル (5x5 GRID) -->
     <div class="controller-panel">
-        <p class="guide-text">外側：2速（速い） / 内側：1速（普通）<br>※押している間だけ進みます</p>
+        <p class="guide-text">タップで動作開始 / STOPまたは別ボタンで切り替え</p>
         <div class="dpad-container">
             <!-- Row 1 -->
             <div></div>
@@ -382,42 +378,32 @@
             }, 2000);
         }
 
-        // --- 操作性の改善：ホールド操作（押したら移動・離したら停止） ---
+        // --- ワンタップ操作（タップしたボタンの動作を維持） ---
         const cmdButtons = document.querySelectorAll('.btn-cmd[data-cmd]');
-        let activeCommand = null;
+        const btnStop = document.getElementById('btn-s');
 
         cmdButtons.forEach(btn => {
-            const cmd = btn.getAttribute('data-cmd');
-
-            // 押した時 (マウス & タッチ)
-            const handleStart = (e) => {
-                e.preventDefault();
-                activeCommand = cmd;
+            btn.addEventListener('click', () => {
+                const cmd = btn.getAttribute('data-cmd');
+                
+                // アクティブ表示のクリア
+                cmdButtons.forEach(b => b.classList.remove('active'));
+                
+                // 選択したボタンをハイライト
                 btn.classList.add('active');
+                
+                // コマンド送信
                 send(cmd);
-            };
-
-            // 離した時
-            const handleEnd = (e) => {
-                e.preventDefault();
-                if (activeCommand) {
-                    activeCommand = null;
-                    btn.classList.remove('active');
-                    send('S'); // 離したら安全のためSTOP送信
-                }
-            };
-
-            btn.addEventListener('mousedown', handleStart);
-            btn.addEventListener('mouseup', handleEnd);
-            btn.addEventListener('mouseleave', handleEnd);
-
-            btn.addEventListener('touchstart', handleStart);
-            btn.addEventListener('touchend', handleEnd);
-            btn.addEventListener('touchcancel', handleEnd);
+            });
         });
 
-        // STOP & クラクション
-        document.getElementById('btn-s').addEventListener('click', () => send('S'));
+        // STOPボタン処理
+        btnStop.addEventListener('click', () => {
+            cmdButtons.forEach(b => b.classList.remove('active'));
+            send('S');
+        });
+
+        // クラクション処理
         document.getElementById('btn-horn').addEventListener('click', () => send('H'));
     </script>
 </body>
