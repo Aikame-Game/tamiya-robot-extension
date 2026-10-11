@@ -26,13 +26,13 @@
 
         header {
             text-align: center;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
         }
 
         h1 {
             font-size: 1.5rem;
             color: #4c97ff;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
         }
 
         /* 接続ステータスバー */
@@ -44,8 +44,8 @@
             padding: 10px 20px;
             border-radius: 30px;
             width: 100%;
-            max-width: 400px;
-            margin-bottom: 20px;
+            max-width: 420px;
+            margin-bottom: 15px;
         }
 
         .status-indicator {
@@ -82,11 +82,11 @@
             background-color: #005f7f;
         }
 
-        /* モード切替（Scratchジャンプボタン） */
+        /* Mode Jump Button */
         .nav-scratch {
             width: 100%;
-            max-width: 400px;
-            margin-bottom: 25px;
+            max-width: 420px;
+            margin-bottom: 20px;
         }
 
         .btn-scratch {
@@ -112,44 +112,63 @@
             transform: scale(0.98);
         }
 
-        /* D-PAD（コントローラー部分） */
+        /* D-PAD (5x5 GRID for 2-step arrows) */
         .controller-panel {
             background: #2a2a38;
-            padding: 25px;
+            padding: 20px;
             border-radius: 24px;
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 20px;
+            gap: 15px;
             width: 100%;
-            max-width: 400px;
+            max-width: 420px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
 
-        .dpad {
+        .dpad-container {
             display: grid;
-            grid-template-columns: repeat(3, 80px);
-            grid-template-rows: repeat(3, 80px);
-            gap: 10px;
+            grid-template-columns: repeat(5, 1fr);
+            grid-template-rows: repeat(5, 1fr);
+            gap: 8px;
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            max-width: 360px;
         }
 
         .btn-cmd {
             background: #3a3a4c;
             border: 2px solid #4a4a5e;
-            border-radius: 16px;
+            border-radius: 14px;
             color: white;
-            font-size: 1.8rem;
+            font-size: 1.2rem;
+            font-weight: bold;
             display: flex;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            transition: background 0.1s;
+            transition: background 0.1s, transform 0.05s;
             touch-action: manipulation;
         }
 
         .btn-cmd:active, .btn-cmd.active {
             background: #4c97ff;
             border-color: #79b1ff;
+            transform: scale(0.95);
+        }
+
+        /* 2段階（Fast）ボタンの強調表示 */
+        .btn-cmd.fast {
+            background: #2b4263;
+            border-color: #3b629b;
+            color: #ffca28;
+        }
+
+        .btn-cmd.fast:active, .btn-cmd.fast.active {
+            background: #ffab19;
+            border-color: #ffd54f;
+            color: #fff;
         }
 
         .btn-stop {
@@ -157,16 +176,18 @@
             border-color: #f44336;
             font-size: 1rem;
             font-weight: bold;
+            grid-column: 3;
+            grid-row: 3;
         }
 
         .btn-stop:active {
             background: #b71c1c;
         }
 
-        /* サブコントロール（ギア・ホーン） */
+        /* Sub controls */
         .sub-controls {
             display: flex;
-            gap: 15px;
+            gap: 10px;
             width: 100%;
         }
 
@@ -181,15 +202,10 @@
             cursor: pointer;
         }
 
-        .btn-sub.gear-active {
-            background: #4caf50;
-            border-color: #81c784;
-        }
-
-        /* アラート通知表示 */
+        /* Alert Display */
         .alert-banner {
             width: 100%;
-            max-width: 400px;
+            max-width: 420px;
             margin-top: 15px;
             padding: 12px;
             border-radius: 10px;
@@ -208,6 +224,12 @@
             background: #f44336;
             color: #fff;
             display: block;
+        }
+
+        .guide-text {
+            font-size: 0.8rem;
+            color: #888;
+            text-align: center;
         }
     </style>
 </head>
@@ -234,22 +256,47 @@
         </button>
     </div>
 
-    <!-- コントローラーパネル -->
+    <!-- コントローラーパネル (5x5 GRID) -->
     <div class="controller-panel">
-        <div class="dpad">
+        <p class="guide-text">外側：2速（速い） / 内側：1速（普通）<br>※押している間だけ進みます</p>
+        <div class="dpad-container">
+            <!-- Row 1 -->
             <div></div>
-            <button class="btn-cmd" id="btn-f">▲</button>
             <div></div>
-            <button class="btn-cmd" id="btn-l">◀</button>
+            <button class="btn-cmd fast" data-cmd="F2" style="grid-column: 3; grid-row: 1;">▲▲<span style="font-size:0.6rem">高速</span></button>
+            <div></div>
+            <div></div>
+
+            <!-- Row 2 -->
+            <div></div>
+            <div></div>
+            <button class="btn-cmd" data-cmd="F" style="grid-column: 3; grid-row: 2;">▲</button>
+            <div></div>
+            <div></div>
+
+            <!-- Row 3 -->
+            <div></div>
+            <button class="btn-cmd" data-cmd="L" style="grid-column: 2; grid-row: 3;">◀</button>
             <button class="btn-cmd btn-stop" id="btn-s">STOP</button>
-            <button class="btn-cmd" id="btn-r">▶</button>
+            <button class="btn-cmd" data-cmd="R" style="grid-column: 4; grid-row: 3;">▶</button>
             <div></div>
-            <button class="btn-cmd" id="btn-b">▼</button>
+
+            <!-- Row 4 -->
+            <div></div>
+            <div></div>
+            <button class="btn-cmd" data-cmd="B" style="grid-column: 3; grid-row: 4;">▼</button>
+            <div></div>
+            <div></div>
+
+            <!-- Row 5 -->
+            <div></div>
+            <div></div>
+            <button class="btn-cmd fast" data-cmd="B2" style="grid-column: 3; grid-row: 5;">▼▼<span style="font-size:0.6rem">高速</span></button>
+            <div></div>
             <div></div>
         </div>
 
         <div class="sub-controls">
-            <button id="btn-gear" class="btn-sub">⚙️ GEAR: 1</button>
             <button id="btn-horn" class="btn-sub">🎺 クラクション</button>
         </div>
     </div>
@@ -258,27 +305,24 @@
     <div id="alert-box" class="alert-banner"></div>
 
     <script>
-        // === 設定 ===
+        // === Scratch URL ===
         const EXTENSION_URL = "https://Aikame-Game.github.io/tamiya-robot-extension/tamiya_robot_extension.js";
         const TURBOWARP_URL = `https://turbowarp.org/editor?extension=${encodeURIComponent(EXTENSION_URL)}`;
 
-        // Scratchへ飛ぶ
         document.getElementById('btn-scratch').addEventListener('click', () => {
             window.location.href = TURBOWARP_URL;
         });
 
-        // === WebUSB 通信ロジック ===
+        // === WebUSB 通信 ===
         let port = null;
         let writer = null;
         let reader = null;
-        let isGear2 = false;
 
         const btnConnect = document.getElementById('btn-connect');
         const dot = document.getElementById('dot');
         const statusText = document.getElementById('status-text');
         const alertBox = document.getElementById('alert-box');
 
-        // USB接続処理
         btnConnect.addEventListener('click', async () => {
             try {
                 port = await navigator.serial.requestPort();
@@ -294,18 +338,16 @@
 
                 startReading();
             } catch (e) {
-                alert("接続に失敗しました: " + e);
+                alert("接続エラー: " + e);
             }
         });
 
-        // シリアルデータ送信
         async function send(cmd) {
             if (writer) {
                 await writer.write(cmd + "\n");
             }
         }
 
-        // シリアル受信（WALL / FLIP 警報受信）
         async function startReading() {
             const textDecoder = new TextDecoderStream();
             port.readable.pipeTo(textDecoder.writable);
@@ -340,27 +382,43 @@
             }, 2000);
         }
 
-        // --- コントローラーボタンイベント ---
-        const btnF = document.getElementById('btn-f');
-        const btnB = document.getElementById('btn-b');
-        const btnL = document.getElementById('btn-l');
-        const btnR = document.getElementById('btn-r');
-        const btnS = document.getElementById('btn-s');
-        const btnGear = document.getElementById('btn-gear');
-        const btnHorn = document.getElementById('btn-horn');
+        // --- 操作性の改善：ホールド操作（押したら移動・離したら停止） ---
+        const cmdButtons = document.querySelectorAll('.btn-cmd[data-cmd]');
+        let activeCommand = null;
 
-        btnF.addEventListener('click', () => send(isGear2 ? 'F2' : 'F'));
-        btnB.addEventListener('click', () => send(isGear2 ? 'B2' : 'B'));
-        btnL.addEventListener('click', () => send('L'));
-        btnR.addEventListener('click', () => send('R'));
-        btnS.addEventListener('click', () => send('S'));
-        btnHorn.addEventListener('click', () => send('H'));
+        cmdButtons.forEach(btn => {
+            const cmd = btn.getAttribute('data-cmd');
 
-        btnGear.addEventListener('click', () => {
-            isGear2 = !isGear2;
-            btnGear.textContent = isGear2 ? "⚙️ GEAR: 2 (FAST)" : "⚙️ GEAR: 1";
-            btnGear.classList.toggle('gear-active', isGear2);
+            // 押した時 (マウス & タッチ)
+            const handleStart = (e) => {
+                e.preventDefault();
+                activeCommand = cmd;
+                btn.classList.add('active');
+                send(cmd);
+            };
+
+            // 離した時
+            const handleEnd = (e) => {
+                e.preventDefault();
+                if (activeCommand) {
+                    activeCommand = null;
+                    btn.classList.remove('active');
+                    send('S'); // 離したら安全のためSTOP送信
+                }
+            };
+
+            btn.addEventListener('mousedown', handleStart);
+            btn.addEventListener('mouseup', handleEnd);
+            btn.addEventListener('mouseleave', handleEnd);
+
+            btn.addEventListener('touchstart', handleStart);
+            btn.addEventListener('touchend', handleEnd);
+            btn.addEventListener('touchcancel', handleEnd);
         });
+
+        // STOP & クラクション
+        document.getElementById('btn-s').addEventListener('click', () => send('S'));
+        document.getElementById('btn-horn').addEventListener('click', () => send('H'));
     </script>
 </body>
 </html>
